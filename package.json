@@ -1,0 +1,13 @@
+{
+  "name": "antigravity-continuity-portal",
+  "version": "1.0.0",
+  "description": "Cross-platform continuity portal and session manager for Google Antigravity IDE",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["antigravity", "gemini", "continuity", "transcripts", "brain", "developer-tools"],
+  "author": "Antigravity Pair Programmer",
+  "license": "MIT"
+}

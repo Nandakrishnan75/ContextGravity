@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Continuity Portal</title>
+  <meta name="description" content="Productive session continuity and context restoration dashboard for Google Antigravity IDE.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/vendor/lucide.min.js"></script>
+  <script src="/vendor/marked.min.js"></script>
+</head>
+<body>
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="terminal" class="icon-brand"></i>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">Antigravity Portal</span>
+          <span class="brand-badge">Continuity</span>
+        </div>
+      </div>
+
+      <div class="status-indicator" id="systemStatus">
+        <span class="status-indicator-dot"></span>
+        <span class="status-text" id="statusSummary">Connecting...</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="dir-pill" id="dirPill" title="Click to change Antigravity data directory">
+        <i data-lucide="folder" class="icon-sm"></i>
+        <span class="dir-path monospace" id="headerDirPath">Loading directory...</span>
+        <button class="dir-edit-btn" id="openDirModalBtn" title="Change Directory">Change</button>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="btn btn-secondary btn-sm" id="themeToggleBtn" title="Toggle Light / Dark Mode">
+        <i data-lucide="sun" id="themeIcon" class="icon-sm"></i>
+        <span id="themeText">Theme</span>
+      </button>
+
+      <button class="btn btn-secondary btn-sm" id="refreshBtn" title="Refresh Sessions from Disk">
+        <i data-lucide="refresh-cw" class="icon-sm"></i>
+        <span>Refresh</span>
+      </button>
+
+      <button class="btn btn-primary btn-sm" id="quickPromptModalBtn" title="Quick Continuity Prompt">
+        <i data-lucide="sparkles" class="icon-sm"></i>
+        <span>Instant Continuity</span>
+      </button>
+
+      <button class="icon-btn" id="helpModalBtn" title="How it Works & Instructions">
+        <i data-lucide="help-circle" class="icon-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-layout">
+    <!-- Sidebar: Conversation Explorer -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="search-box">
+          <i data-lucide="search" class="icon-sm search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Search prompts, IDs, projects... ( / )" autocomplete="off">
+          <button id="clearSearchBtn" class="clear-btn" style="display:none;" title="Clear search">
+            <i data-lucide="x" class="icon-xs"></i>
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <select id="projectFilter" class="select-sm" title="Filter by Project">
+            <option value="ALL">All Projects</option>
+          </select>
+          <select id="sortFilter" class="select-sm" title="Sort by">
+            <option value="recent">Newest First</option>
+            <option value="steps">Most Steps</option>
+            <option value="size">Largest Size</option>
+            <option value="name">Project A-Z</option>
+          </select>
+        </div>
+
+        <div class="filter-chips">
+          <button class="chip active" data-filter="all">All (<span id="totalCountBadge">0</span>)</button>
+          <button class="chip" data-filter="favorites">Starred (<span id="favCountBadge">0</span>)</button>
+          <button class="chip" data-filter="artifacts">Artifacts (<span id="artifactCountBadge">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- Conversation List (Scrollable) -->
+      <div class="conversation-list" id="conversationList">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <span>Indexing Antigravity sessions from disk...</span>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer Stats -->
+      <div class="sidebar-footer">
+        <div class="footer-stats">
+          <span id="footerConvsCount">0 sessions</span> &bull; 
+          <span id="footerProjectsCount">0 projects</span>
+        </div>
+        <div class="footer-os-badge monospace" id="osBadge">Detecting OS...</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area: Session Details -->
+    <section class="main-panel" id="mainPanel">
+      <!-- Empty State (When no conversation is selected) -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-content">
+          <div class="empty-icon-wrapper">
+            <i data-lucide="layout-dashboard" class="icon-xl"></i>
+          </div>
+          <h2>Select a Session to Restore Context</h2>
+          <p class="empty-description">
+            Google Antigravity saves your conversation transcripts, tool calls, and artifacts locally on disk. Select any session on the left to inspect past steps or copy an <strong>Instant Continuity Prompt</strong> to resume in a new chat.
+          </p>
+
+          <div class="quick-tips-grid">
+            <div class="tip-card">
+              <div class="tip-header">
+                <i data-lucide="sparkles" class="icon-sm"></i>
+                <span class="tip-title">1-Click Continuity</span>
+              </div>
+              <div class="tip-desc">Copy a pre-formatted resume prompt that instructs Antigravity to reload previous context from disk.</div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-header">
+                <i data-lucide="file-text" class="icon-sm"></i>
+                <span class="tip-title">Artifacts & Deliverables</span>
+              </div>
+              <div class="tip-desc">View plans, walkthroughs, scratch scripts, and code files created during past sessions.</div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-header">
+                <i data-lucide="layers" class="icon-sm"></i>
+                <span class="tip-title">Zero Token Waste</span>
+              </div>
+              <div class="tip-desc">Pick up exactly where you left off without manually re-explaining project architecture.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail View (When a conversation is selected) -->
+      <div class="detail-container" id="detailContainer" style="display: none;">
+        <!-- Detail Header -->
+        <div class="detail-header">
+          <div class="detail-title-row">
+            <div class="title-left">
+              <span class="project-tag" id="detailProjectBadge">Project</span>
+              <h1 class="session-title" id="detailTitle">Conversation Title</h1>
+            </div>
+            <div class="title-actions">
+              <button class="btn btn-secondary btn-sm" id="detailStarBtn" title="Bookmark this conversation">
+                <i data-lucide="star" class="icon-xs"></i>
+                <span id="starBtnText">Star</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Metadata Strip -->
+          <div class="meta-strip">
+            <div class="meta-item id-pill" id="detailIdPill" title="Click to copy ID">
+              <span class="meta-label">ID:</span>
+              <span class="meta-val monospace" id="detailId">00000000-0000-0000-0000-000000000000</span>
+              <i data-lucide="copy" class="icon-xs"></i>
+            </div>
+
+            <div class="meta-item" id="detailWorkspaceItem">
+              <span class="meta-label">Path:</span>
+              <span class="meta-val monospace" id="detailWorkspace">c:/Users/...</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">Updated:</span>
+              <span class="meta-val" id="detailDate">Oct 1, 2026</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">Stats:</span>
+              <span class="meta-val" id="detailStats">0 steps &bull; 0 KB</span>
+            </div>
+          </div>
+
+          <!-- Action Bar -->
+          <div class="action-strip">
+            <button class="btn btn-primary" id="copyContinuityBtn" title="Copy Agent Resume Prompt to clipboard">
+              <i data-lucide="sparkles" class="icon-sm"></i>
+              <span>Copy Continuity Prompt</span>
+            </button>
+
+            <button class="btn btn-secondary" id="copyCompactPromptBtn" title="Copy compact token-saving prompt">
+              <i data-lucide="copy" class="icon-sm"></i>
+              <span>Compact Prompt</span>
+            </button>
+
+            <button class="btn btn-secondary" id="openBrainFolderBtn" title="Open Brain Folder in File Manager">
+              <i data-lucide="folder" class="icon-sm"></i>
+              <span>Open Folder</span>
+            </button>
+
+            <!-- Export dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" id="exportDropdownBtn">
+                <i data-lucide="download" class="icon-sm"></i>
+                <span>Export</span>
+                <i data-lucide="chevron-down" class="icon-xs"></i>
+              </button>
+              <div class="dropdown-menu" id="exportMenu">
+                <button class="dropdown-item" id="exportMdBtn">
+                  <i data-lucide="file-text" class="icon-xs"></i>
+                  <span>Markdown (.md)</span>
+                </button>
+                <button class="dropdown-item" id="exportJsonBtn">
+                  <i data-lucide="code" class="icon-xs"></i>
+                  <span>JSON Transcript (.json)</span>
+                </button>
+                <button class="dropdown-item" id="exportHtmlBtn">
+                  <i data-lucide="layout" class="icon-xs"></i>
+                  <span>Standalone HTML (.html)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <nav class="detail-tabs">
+            <button class="tab-btn active" data-tab="timeline">
+              <i data-lucide="message-square" class="icon-xs"></i>
+              <span>Chat Timeline (<span id="tabMsgCount">0</span>)</span>
+            </button>
+            <button class="tab-btn" data-tab="artifacts">
+              <i data-lucide="file-text" class="icon-xs"></i>
+              <span>Artifacts & Files (<span id="tabArtifactsCount">0</span>)</span>
+            </button>
+            <button class="tab-btn" data-tab="continuity">
+              <i data-lucide="sparkles" class="icon-xs"></i>
+              <span>Continuity Hub</span>
+            </button>
+            <button class="tab-btn" data-tab="files">
+              <i data-lucide="layers" class="icon-xs"></i>
+              <span>Files Touched (<span id="tabFilesCount">0</span>)</span>
+            </button>
+            <button class="tab-btn" data-tab="notes">
+              <i data-lucide="edit-3" class="icon-xs"></i>
+              <span>Notes & Tags</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Tab 1: Chat Timeline (Scrollable) -->
+        <div class="tab-content active" id="tab-timeline">
+          <div class="timeline-controls">
+            <div class="search-box timeline-search-box">
+              <i data-lucide="search" class="icon-xs search-icon"></i>
+              <input type="text" id="timelineSearch" placeholder="Filter messages in this chat..." class="input-sm">
+            </div>
+
+            <div class="segmented-control">
+              <button class="seg-btn active" id="viewModeTurns" title="Grouped Conversation Turns">
+                <i data-lucide="messages-square" class="icon-xs"></i>
+                <span>Conversation</span>
+              </button>
+              <button class="seg-btn" id="viewModeSteps" title="Step-by-Step Developer Trace">
+                <i data-lucide="list" class="icon-xs"></i>
+                <span>All Steps (<span id="allStepsCount">0</span>)</span>
+              </button>
+            </div>
+
+            <div class="timeline-toggles">
+              <button class="btn btn-xs btn-outline" id="toggleAllActionsBtn" title="Expand / Collapse all tool executions">
+                <i data-lucide="chevrons-up-down" class="icon-xs"></i>
+                <span id="toggleAllActionsText">Expand Actions</span>
+              </button>
+            </div>
+          </div>
+          <div class="messages-container" id="messagesContainer">
+            <!-- Messages rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Artifacts & Files (Scrollable) -->
+        <div class="tab-content" id="tab-artifacts">
+          <div class="artifacts-section-header">
+            <h3>Session Artifacts & Deliverables</h3>
+            <span class="text-muted text-sm">Click any artifact below to preview, copy, or download.</span>
+          </div>
+
+          <div class="artifacts-grid" id="artifactsGrid">
+            <!-- Artifact cards rendered via JS -->
+          </div>
+
+          <div class="artifact-preview-card" id="artifactPreviewCard" style="display:none;">
+            <div class="preview-header">
+              <div class="preview-title-row">
+                <i data-lucide="file-text" class="icon-sm"></i>
+                <h4 id="previewFileName">filename.md</h4>
+                <span class="badge" id="previewBadge">Document</span>
+              </div>
+              <div class="preview-actions">
+                <button class="btn btn-secondary btn-sm" id="copyArtifactBtn">
+                  <i data-lucide="copy" class="icon-xs"></i>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="preview-content markdown-body" id="previewContent"></div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Continuity Hub (Scrollable) -->
+        <div class="tab-content" id="tab-continuity">
+          <div class="continuity-guide-banner">
+            <div class="guide-badge">CONTINUITY PROTOCOL</div>
+            <h3>How to resume in a fresh chat</h3>
+            <p>
+              Copy any prompt below and paste it into a new Antigravity chat. Antigravity will automatically inspect its own local transcript and artifacts on disk to restore 100% of your project's context without wasting token limits.
+            </p>
+          </div>
+
+          <div class="prompt-box-card">
+            <div class="prompt-box-header">
+              <div class="prompt-type-badge recommended">
+                <i data-lucide="check-circle" class="icon-xs"></i>
+                <span>Recommended &bull; Full Agent Recall Prompt</span>
+              </div>
+              <button class="btn btn-sm btn-primary copy-prompt-btn" data-target="agentRecallPromptArea">
+                <i data-lucide="copy" class="icon-xs"></i>
+                <span>Copy Prompt</span>
+              </button>
+            </div>
+            <textarea id="agentRecallPromptArea" class="prompt-textarea monospace" readonly rows="9"></textarea>
+            <div class="prompt-desc">Tells Antigravity to read its own local transcript and artifacts via view_file. Restores 100% memory without human re-typing.</div>
+          </div>
+
+          <div class="prompt-box-card">
+            <div class="prompt-box-header">
+              <div class="prompt-type-badge">
+                <i data-lucide="zap" class="icon-xs"></i>
+                <span>Compact Prompt (Token Saver)</span>
+              </div>
+              <button class="btn btn-sm btn-secondary copy-prompt-btn" data-target="compactPromptArea">
+                <i data-lucide="copy" class="icon-xs"></i>
+                <span>Copy Prompt</span>
+              </button>
+            </div>
+            <textarea id="compactPromptArea" class="prompt-textarea monospace" readonly rows="4"></textarea>
+            <div class="prompt-desc">Short summary ideal for quick continuation where deep inspection is not immediately needed.</div>
+          </div>
+
+          <div class="prompt-box-card">
+            <div class="prompt-box-header">
+              <div class="prompt-type-badge">
+                <i data-lucide="at-sign" class="icon-xs"></i>
+                <span>Shorthand @ Mention</span>
+              </div>
+              <button class="btn btn-sm btn-secondary copy-prompt-btn" data-target="slashPromptArea">
+                <i data-lucide="copy" class="icon-xs"></i>
+                <span>Copy Prompt</span>
+              </button>
+            </div>
+            <input type="text" id="slashPromptArea" class="prompt-input monospace" readonly>
+            <div class="prompt-desc">Direct conversation ID mention supported by Antigravity conversation routing.</div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Files Touched & Tools (Scrollable) -->
+        <div class="tab-content" id="tab-files">
+          <div class="tools-summary-section">
+            <h4>Executed Tools Breakdown</h4>
+            <div class="tools-summary-cards" id="toolsSummary">
+              <!-- Tool stats rendered via JS -->
+            </div>
+          </div>
+
+          <div class="files-touched-section">
+            <h4>Files Touched in this Session (<span id="filesCountHeader">0</span>)</h4>
+            <ul class="file-list" id="filesList">
+              <!-- Files rendered via JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 5: Notes & Customization (Scrollable) -->
+        <div class="tab-content" id="tab-notes">
+          <div class="notes-form">
+            <div class="form-group">
+              <label for="customTitleInput">Custom Title / Nickname</label>
+              <input type="text" id="customTitleInput" placeholder="Give this session a descriptive name (e.g. Booking Engine Refactor)">
+            </div>
+
+            <div class="form-group">
+              <label for="tagsInput">Tags (comma separated)</label>
+              <input type="text" id="tagsInput" placeholder="e.g. auth, billing, bugfix, production">
+            </div>
+
+            <button class="btn btn-primary" id="saveMetaBtn">
+              <i data-lucide="save" class="icon-xs"></i>
+              <span>Save Custom Metadata</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Change Directory Modal -->
+  <div class="modal-backdrop" id="dirModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Change Antigravity Data Directory</h3>
+        <button class="modal-close" id="closeDirModalBtn">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted text-sm">
+          Antigravity stores session transcripts and brains in your user profile. You can point to a custom directory or restore the default location.
+        </p>
+
+        <div class="form-group">
+          <label for="dirInput">Antigravity Path</label>
+          <input type="text" id="dirInput" class="input-full monospace" placeholder="e.g. C:\Users\<Username>\.gemini\antigravity-ide">
+        </div>
+
+        <div class="dir-suggestions">
+          <span class="suggestion-label">Quick Locations:</span>
+          <button class="btn btn-xs btn-outline" id="suggestWindowsBtn">Windows Default (%USERPROFILE%\.gemini\antigravity-ide)</button>
+          <button class="btn btn-xs btn-outline" id="suggestLinuxBtn">Linux / Mac Default (~/.gemini/antigravity-ide)</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelDirBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveDirBtn">Apply & Reload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Guide Modal -->
+  <div class="modal-backdrop" id="helpModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Antigravity Continuity Architecture & Guide</h3>
+        <button class="modal-close" id="closeHelpModalBtn">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body help-content">
+        <div class="help-section">
+          <h4>Why did my conversations disappear from the IDE?</h4>
+          <p>
+            When Google Antigravity restarts or closes, it unloads past sessions from active memory to keep the interface fast. <strong>Your conversations, code edits, and artifacts are never deleted.</strong> They are stored at:
+          </p>
+          <code class="code-block monospace">
+            Windows: %USERPROFILE%\.gemini\antigravity-ide\brain\&lt;id&gt;\.system_generated\logs\transcript.jsonl<br>
+            Linux:   ~/.gemini/antigravity-ide/brain/&lt;id&gt;/.system_generated/logs/transcript.jsonl
+          </code>
+        </div>
+
+        <div class="help-section">
+          <h4>How to restore continuity in 3 steps:</h4>
+          <ol class="help-steps">
+            <li>Find your previous conversation in this dashboard.</li>
+            <li>Click <strong>"Copy Continuity Prompt"</strong>.</li>
+            <li>Open a new chat in Antigravity and paste the prompt. Antigravity uses its built-in file inspection tools to read its own local transcript and artifacts, regaining full memory instantly.</li>
+          </ol>
+        </div>
+
+        <div class="help-section">
+          <h4>Running on Windows and Linux:</h4>
+          <ul>
+            <li><strong>Windows:</strong> Double click <code>start.bat</code></li>
+            <li><strong>Linux / macOS:</strong> Run <code>./start.sh</code> or <code>node server.js</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="dismissHelpBtn">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Instant Continuity Modal -->
+  <div class="modal-backdrop" id="quickPromptModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Instant Resume Prompt for Latest Session</h3>
+        <button class="modal-close" id="closeQuickPromptBtn">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted text-sm">
+          Resume prompt for your most recent session (<strong id="latestSessionTitle">...</strong>):
+        </p>
+        <textarea id="latestPromptText" class="prompt-textarea monospace" rows="8" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeQuickPromptBtn2">Close</button>
+        <button class="btn btn-primary" id="copyLatestPromptBtn">Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

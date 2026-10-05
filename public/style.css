@@ -1366,6 +1366,7 @@ html, body {
   font-weight: 600;
 }
 
+/* Links in Markdown - Clean underline, NO box by default */
 .markdown-body a {
   color: var(--link-color);
   text-decoration: underline;
@@ -1380,43 +1381,7 @@ html, body {
   text-decoration-color: var(--link-hover);
 }
 
-.markdown-body a code {
-  color: inherit;
-  background: var(--code-inline-bg);
-  border: 1px solid var(--code-inline-border);
-  text-decoration: underline;
-  text-decoration-color: var(--link-underline);
-}
-
-.markdown-body a:hover code {
-  color: var(--link-hover);
-  border-color: var(--link-hover);
-}
-
-.markdown-body a[href^="file:"] {
-  color: var(--file-badge-text);
-  background: var(--file-badge-bg);
-  border: 1px solid var(--file-badge-border);
-  border-radius: 4px;
-  padding: 1px 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.82rem;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  word-break: break-all;
-  cursor: pointer;
-  vertical-align: middle;
-}
-
-.markdown-body a[href^="file:"]:hover {
-  background: var(--bg-surface-hover);
-  border-color: var(--border-medium);
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
+/* Standalone Inline Code - Single Clean Box */
 .markdown-body code {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
@@ -1425,6 +1390,63 @@ html, body {
   color: var(--code-inline-text);
   border: 1px solid var(--code-inline-border);
   border-radius: 4px;
+  word-break: break-word;
+}
+
+/* Any <a> that wraps <code> MUST NOT have its own box (eliminates box-inside-box) */
+.markdown-body a:has(code),
+.markdown-body a.has-code {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  display: inline !important;
+}
+
+/* Code inside any link - Single Box with interactive hover */
+.markdown-body a code {
+  color: var(--code-inline-text);
+  background: var(--code-inline-bg);
+  border: 1px solid var(--code-inline-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: baseline;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.markdown-body a:hover code {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  background: var(--bg-surface-hover);
+}
+
+/* File link without code inside: Single Box */
+.markdown-body a[href^="file:"]:not(:has(code)):not(.has-code) {
+  color: var(--code-inline-text);
+  background: var(--code-inline-bg);
+  border: 1px solid var(--code-inline-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  text-decoration: none;
+  display: inline-block;
+  word-break: break-all;
+  cursor: pointer;
+  vertical-align: baseline;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.markdown-body a[href^="file:"]:not(:has(code)):not(.has-code):hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
 }
 
 .code-block-wrapper {

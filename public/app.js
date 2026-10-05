@@ -446,7 +446,10 @@ function renderMarkdown(content) {
       `;
     };
 
-    return `<div class="markdown-body">${window.marked.parse(content, { renderer })}</div>`;
+    let html = window.marked.parse(content, { renderer });
+    // Tag any <a> that wraps <code> with class 'has-code' to prevent nested boxes
+    html = html.replace(/<a\s+([^>]*?)>(\s*<code[^>]*>)/gi, '<a $1 class="has-code">$2');
+    return `<div class="markdown-body">${html}</div>`;
   } catch (e) {
     return `<div class="msg-content">${escapeHtml(content)}</div>`;
   }

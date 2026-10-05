@@ -2,50 +2,50 @@
 
 :root, [data-theme="light"] {
   --bg-app: #ffffff;
-  --bg-sidebar: #f8fafc;
+  --bg-sidebar: #fafafa;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f5f9;
+  --bg-surface-hover: #f4f4f5;
   --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
+  --bg-card-hover: #fafafa;
   --bg-header: #ffffff;
   --bg-input: #ffffff;
-  --bg-code: #f8fafc;
+  --bg-code: #f4f4f5;
   --bg-modal: #ffffff;
 
-  --border-subtle: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --border-focus: #0f172a;
+  --border-subtle: #e4e4e7;
+  --border-medium: #d4d4d8;
+  --border-focus: #000000;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-dim: #94a3b8;
+  --text-primary: #000000;
+  --text-secondary: #27272a;
+  --text-muted: #71717a;
+  --text-dim: #a1a1aa;
   --text-inverse: #ffffff;
 
-  --btn-primary-bg: #0f172a;
+  --btn-primary-bg: #000000;
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: #1e293b;
+  --btn-primary-hover: #27272a;
 
   --btn-secondary-bg: #ffffff;
-  --btn-secondary-text: #0f172a;
-  --btn-secondary-border: #cbd5e1;
-  --btn-secondary-hover: #f1f5f9;
+  --btn-secondary-text: #000000;
+  --btn-secondary-border: #e4e4e7;
+  --btn-secondary-hover: #f4f4f5;
 
-  --badge-bg: #f1f5f9;
-  --badge-text: #334155;
-  --badge-border: #e2e8f0;
+  --badge-bg: #f4f4f5;
+  --badge-text: #18181b;
+  --badge-border: #e4e4e7;
 
-  --card-active-bg: #f8fafc;
-  --card-active-border: #0f172a;
+  --card-active-bg: #f4f4f5;
+  --card-active-border: #000000;
 
-  --bubble-user-bg: #f1f5f9;
-  --bubble-user-border: #e2e8f0;
+  --bubble-user-bg: #f4f4f5;
+  --bubble-user-border: #e4e4e7;
   --bubble-assistant-bg: #ffffff;
-  --bubble-assistant-border: #e2e8f0;
+  --bubble-assistant-border: #e4e4e7;
 
-  --scrollbar-track: #f1f5f9;
-  --scrollbar-thumb: #cbd5e1;
-  --scrollbar-thumb-hover: #94a3b8;
+  --scrollbar-track: #fafafa;
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-thumb-hover: #a1a1aa;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
@@ -53,55 +53,54 @@
 }
 
 [data-theme="dark"] {
-  --bg-app: #090d16;
-  --bg-sidebar: #0f1624;
-  --bg-surface: #141d2f;
-  --bg-surface-hover: #1a263d;
-  --bg-card: #141d2f;
-  --bg-card-hover: #19243a;
-  --bg-header: #0f1624;
-  --bg-input: #090d16;
-  --bg-code: #090d16;
-  --bg-modal: #141d2f;
+  --bg-app: #0a0a0a;
+  --bg-sidebar: #121212;
+  --bg-surface: #171717;
+  --bg-surface-hover: #262626;
+  --bg-card: #171717;
+  --bg-card-hover: #222222;
+  --bg-header: #121212;
+  --bg-input: #0a0a0a;
+  --bg-code: #121212;
+  --bg-modal: #171717;
 
-  --border-subtle: #1e2a40;
-  --border-medium: #2a3a57;
+  --border-subtle: #262626;
+  --border-medium: #404040;
   --border-focus: #ffffff;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-dim: #475569;
-  --text-inverse: #0f172a;
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --text-muted: #a3a3a3;
+  --text-dim: #737373;
+  --text-inverse: #0a0a0a;
 
   --btn-primary-bg: #ffffff;
-  --btn-primary-text: #0f172a;
-  --btn-primary-hover: #e2e8f0;
+  --btn-primary-text: #0a0a0a;
+  --btn-primary-hover: #e5e5e5;
 
-  --btn-secondary-bg: #141d2f;
-  --btn-secondary-text: #f8fafc;
-  --btn-secondary-border: #2a3a57;
-  --btn-secondary-hover: #1a263d;
+  --btn-secondary-bg: #171717;
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-border: #333333;
+  --btn-secondary-hover: #262626;
 
-  --badge-bg: #1a263d;
-  --badge-text: #cbd5e1;
-  --badge-border: #2a3a57;
+  --badge-bg: #262626;
+  --badge-text: #e5e5e5;
+  --badge-border: #404040;
 
-  --card-active-bg: #1a263d;
+  --card-active-bg: #262626;
   --card-active-border: #ffffff;
 
-  --bubble-user-bg: #131c2d;
-  --bubble-user-border: #223049;
-  --bubble-assistant-bg: #141d2f;
-  --bubble-assistant-border: #1e2a40;
+  --bubble-user-bg: #1c1c1e;
+  --bubble-user-border: #2e2e32;
+  --bubble-assistant-bg: #141416;
+  --bubble-assistant-border: #2e2e32;
 
-  --scrollbar-track: #0f1624;
-  --scrollbar-thumb: #2a3a57;
-  --scrollbar-thumb-hover: #3d527a;
+  --scrollbar-track: #121212;
+  --scrollbar-thumb: #333333;
+  --scrollbar-thumb-hover: #525252;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.6);
 }
 
 * {

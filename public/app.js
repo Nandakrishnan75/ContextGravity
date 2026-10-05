@@ -393,8 +393,8 @@ async function selectConversation(convId, scrollIntoView = true) {
 
 // Render Conversation Details
 function renderConversationDetails(details) {
-  dom.detailTitle.textContent = details.title;
-  dom.detailProjectBadge.textContent = details.projectName || 'General';
+  dom.detailTitle.textContent = stripEmojis(details.title);
+  dom.detailProjectBadge.textContent = stripEmojis(details.projectName || 'General');
 
   dom.detailId.textContent = details.id;
   dom.detailWorkspace.textContent = details.projectPath || '(Workspace not recorded)';
@@ -405,9 +405,9 @@ function renderConversationDetails(details) {
   dom.detailStarBtn.classList.toggle('active', details.isFavorite);
   dom.starBtnText.textContent = details.isFavorite ? 'Starred' : 'Star';
 
-  dom.agentRecallPromptArea.value = details.prompts.agentRecallPrompt;
-  dom.compactPromptArea.value = details.prompts.compactPrompt;
-  dom.slashPromptArea.value = details.prompts.slashCommandPrompt;
+  dom.agentRecallPromptArea.value = stripEmojis(details.prompts.agentRecallPrompt);
+  dom.compactPromptArea.value = stripEmojis(details.prompts.compactPrompt);
+  dom.slashPromptArea.value = stripEmojis(details.prompts.slashCommandPrompt);
 
   dom.tabMsgCount.textContent = details.messages.length;
   dom.tabArtifactsCount.textContent = details.artifacts ? details.artifacts.length : 0;
@@ -423,8 +423,9 @@ function renderConversationDetails(details) {
 // Custom Markdown Renderer with code block headers and copy buttons
 function renderMarkdown(content) {
   if (!content) return '';
+  const cleanContent = stripEmojis(content);
   if (!window.marked || typeof window.marked.parse !== 'function') {
-    return `<div class="msg-content">${escapeHtml(content)}</div>`;
+    return `<div class="msg-content">${escapeHtml(cleanContent)}</div>`;
   }
 
   try {
@@ -446,12 +447,12 @@ function renderMarkdown(content) {
       `;
     };
 
-    let html = window.marked.parse(content, { renderer });
+    let html = window.marked.parse(cleanContent, { renderer });
     // Tag any <a> that wraps <code> with class 'has-code' to prevent nested boxes
     html = html.replace(/<a\s+([^>]*?)>(\s*<code[^>]*>)/gi, '<a $1 class="has-code">$2');
     return `<div class="markdown-body">${html}</div>`;
   } catch (e) {
-    return `<div class="msg-content">${escapeHtml(content)}</div>`;
+    return `<div class="msg-content">${escapeHtml(cleanContent)}</div>`;
   }
 }
 
@@ -891,10 +892,19 @@ async function copyQuickPromptForId(convId) {
   }
 }
 
+// Unicode Emoji Stripper
+const EMOJI_REGEX = /[\uD800-\uDBFF][\uDC00-\uDFFF]|\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F|\u200D|\u20E3/gu;
+
+function stripEmojis(str) {
+  if (!str || typeof str !== 'string') return str || '';
+  return str.replace(EMOJI_REGEX, '').replace(/[ \t]{2,}/g, ' ');
+}
+
 // Utility: HTML Escaping
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
+    .replace(EMOJI_REGEX, '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')

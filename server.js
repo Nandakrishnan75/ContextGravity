@@ -82,6 +82,28 @@ function extractWorkspaceFromDb(convId) {
   return null;
 }
 
+// Unicode Emoji Stripper
+const EMOJI_REGEX = /[\uD800-\uDBFF][\uDC00-\uDFFF]|\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F|\u200D|\u20E3/gu;
+
+function stripEmojis(str) {
+  if (!str || typeof str !== 'string') return str || '';
+  return str.replace(EMOJI_REGEX, '').replace(/[ \t]{2,}/g, ' ');
+}
+
+function deepStripEmojis(obj) {
+  if (!obj) return obj;
+  if (typeof obj === 'string') return stripEmojis(obj);
+  if (Array.isArray(obj)) return obj.map(deepStripEmojis);
+  if (typeof obj === 'object') {
+    const res = {};
+    for (const k in obj) {
+      res[k] = deepStripEmojis(obj[k]);
+    }
+    return res;
+  }
+  return obj;
+}
+
 // Clean user prompt text
 function cleanPrompt(raw) {
   if (!raw) return '';
@@ -91,6 +113,7 @@ function cleanPrompt(raw) {
     cleaned = match[1];
   }
   cleaned = cleaned.replace(/<[^>]+>/g, ' ');
+  cleaned = stripEmojis(cleaned);
   cleaned = cleaned.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
   return cleaned;
 }
@@ -330,9 +353,10 @@ async function scanConversations(forceRefresh = false) {
   // Sort by latest modified first
   results.sort((a, b) => b.timestamp - a.timestamp);
 
-  cachedConversations = results;
+  const sanitized = deepStripEmojis(results);
+  cachedConversations = sanitized;
   cacheTimestamp = Date.now();
-  return results;
+  return sanitized;
 }
 
 // Helper to finalize a conversation turn
@@ -644,7 +668,7 @@ Inspect \`${transcriptNormPath}\` if details are needed. Ready to continue.`;
   // 3. Slash command hint
   const slashCommandPrompt = `@${convId} Please load previous session context and resume from our last step.`;
 
-  return {
+  return deepStripEmojis({
     id: convId,
     title: userData.customTitles[convId] || firstPrompt || `Session ${convId.substring(0, 8)}`,
     projectName,
@@ -667,7 +691,7 @@ Inspect \`${transcriptNormPath}\` if details are needed. Ready to continue.`;
     },
     isFavorite: !!userData.favorites[convId],
     tags: userData.tags[convId] || []
-  };
+  });
 }
 
 // Generate Markdown export for a conversation

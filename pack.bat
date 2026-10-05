@@ -1,20 +1,17 @@
 @echo off
-title Packing Antigravity Portal
+title Packing ContextGravity Suite
 echo ======================================================
-echo    Packing Antigravity Continuity Portal into ZIP...
+echo    Packing ContextGravity (Extension + Web Portal)...
 echo ======================================================
 
-set DEST=..\antigravity-portal.zip
-
-powershell -Command "Compress-Archive -Path 'server.js', 'package.json', 'start.bat', 'start.sh', 'README.md', 'public' -DestinationPath '%DEST%' -Force"
+node "%~dp0pack.js"
 
 if %errorlevel% equ 0 (
     echo.
-    echo [SUCCESS] Packed successfully to: %DEST%
-    echo You can now send antigravity-portal.zip to anyone!
+    echo [SUCCESS] All packages generated and ready!
 ) else (
     echo.
-    echo [ERROR] Failed to create ZIP file.
+    echo [ERROR] Packaging encountered an error.
 )
 
 pause

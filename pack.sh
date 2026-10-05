@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# Pack Antigravity Continuity Portal into ZIP
+# Pack ContextGravity Suite (Extension + Web Portal) into ZIP archives
 
-echo "Packing Antigravity Continuity Portal into ZIP..."
-DEST="../antigravity-portal.zip"
+echo "======================================================"
+echo "   Packing ContextGravity Suite into ZIP archives...  "
+echo "======================================================"
 
-zip -r "$DEST" server.js package.json start.bat start.sh README.md public
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+node "$SCRIPT_DIR/pack.js"
 
 if [ $? -eq 0 ]; then
-    echo "[SUCCESS] Packed successfully to: $DEST"
+    echo ""
+    echo "[SUCCESS] All packages generated and ready in dist/ and parent directory!"
 else
-    echo "[ERROR] Failed to create ZIP file."
+    echo ""
+    echo "[ERROR] Packaging encountered an error."
 fi

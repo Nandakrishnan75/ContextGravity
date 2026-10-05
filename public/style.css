@@ -43,6 +43,16 @@
   --bubble-assistant-bg: #ffffff;
   --bubble-assistant-border: #e4e4e7;
 
+  --link-color: #09090b;
+  --link-hover: #2563eb;
+  --link-underline: rgba(9, 9, 11, 0.35);
+  --code-inline-bg: #f4f4f5;
+  --code-inline-text: #18181b;
+  --code-inline-border: #e4e4e7;
+  --file-badge-bg: #f4f4f5;
+  --file-badge-text: #18181b;
+  --file-badge-border: #e4e4e7;
+
   --scrollbar-track: #fafafa;
   --scrollbar-thumb: #d4d4d8;
   --scrollbar-thumb-hover: #a1a1aa;
@@ -61,17 +71,17 @@
   --bg-card-hover: #222222;
   --bg-header: #121212;
   --bg-input: #0a0a0a;
-  --bg-code: #121212;
+  --bg-code: #141416;
   --bg-modal: #171717;
 
   --border-subtle: #262626;
   --border-medium: #404040;
   --border-focus: #ffffff;
 
-  --text-primary: #ffffff;
-  --text-secondary: #e5e5e5;
-  --text-muted: #a3a3a3;
-  --text-dim: #737373;
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #52525b;
   --text-inverse: #0a0a0a;
 
   --btn-primary-bg: #ffffff;
@@ -83,17 +93,27 @@
   --btn-secondary-border: #333333;
   --btn-secondary-hover: #262626;
 
-  --badge-bg: #262626;
-  --badge-text: #e5e5e5;
-  --badge-border: #404040;
+  --badge-bg: #222226;
+  --badge-text: #cbd5e1;
+  --badge-border: #333338;
 
   --card-active-bg: #262626;
   --card-active-border: #ffffff;
 
-  --bubble-user-bg: #1c1c1e;
-  --bubble-user-border: #2e2e32;
-  --bubble-assistant-bg: #141416;
-  --bubble-assistant-border: #2e2e32;
+  --bubble-user-bg: #18181b;
+  --bubble-user-border: #27272a;
+  --bubble-assistant-bg: #121214;
+  --bubble-assistant-border: #27272a;
+
+  --link-color: #93c5fd;
+  --link-hover: #bfdbfe;
+  --link-underline: rgba(147, 197, 253, 0.4);
+  --code-inline-bg: #1e1e22;
+  --code-inline-text: #cbd5e1;
+  --code-inline-border: #2e3038;
+  --file-badge-bg: #1c1d22;
+  --file-badge-text: #cbd5e1;
+  --file-badge-border: #2e3038;
 
   --scrollbar-track: #121212;
   --scrollbar-thumb: #333333;
@@ -1186,7 +1206,8 @@ html, body {
 
 .action-item-desc {
   font-size: 0.76rem;
-  color: var(--text-secondary);
+  color: var(--code-inline-text);
+  word-break: break-all;
 }
 
 .action-output-details {
@@ -1345,12 +1366,64 @@ html, body {
   font-weight: 600;
 }
 
+.markdown-body a {
+  color: var(--link-color);
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.markdown-body a:hover {
+  color: var(--link-hover);
+  text-decoration-color: var(--link-hover);
+}
+
+.markdown-body a code {
+  color: inherit;
+  background: var(--code-inline-bg);
+  border: 1px solid var(--code-inline-border);
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+}
+
+.markdown-body a:hover code {
+  color: var(--link-hover);
+  border-color: var(--link-hover);
+}
+
+.markdown-body a[href^="file:"] {
+  color: var(--file-badge-text);
+  background: var(--file-badge-bg);
+  border: 1px solid var(--file-badge-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  word-break: break-all;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.markdown-body a[href^="file:"]:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
 .markdown-body code {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
-  padding: 2px 5px;
-  background: var(--bg-code);
-  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  background: var(--code-inline-bg);
+  color: var(--code-inline-text);
+  border: 1px solid var(--code-inline-border);
   border-radius: 4px;
 }
 
@@ -1404,6 +1477,7 @@ html, body {
   border: none;
   padding: 0;
   font-size: 0.82rem;
+  color: var(--code-inline-text);
 }
 
 .tool-header {
@@ -1676,7 +1750,7 @@ html, body {
   padding: 7px 10px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
-  color: var(--text-secondary);
+  color: var(--code-inline-text);
   display: flex;
   align-items: center;
   gap: 0.5rem;

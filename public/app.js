@@ -1204,6 +1204,17 @@ function setupEventListeners() {
     dom.quickPromptModal.classList.remove('open');
   });
 
+  // Delegated click handler for file links in markdown
+  document.addEventListener('click', (e) => {
+    const fileLink = e.target.closest('a[href^="file:"]');
+    if (fileLink) {
+      e.preventDefault();
+      const rawHref = fileLink.getAttribute('href') || '';
+      const filePath = decodeURIComponent(rawHref.replace(/^file:\/\/\/?/, ''));
+      copyToClipboard(filePath, `Copied file path: ${filePath.split(/[\/\\]/).pop()}`);
+    }
+  });
+
   // Global Keyboard Shortcuts
   document.addEventListener('keydown', (e) => {
     if (e.key === '/' && document.activeElement !== dom.searchInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
